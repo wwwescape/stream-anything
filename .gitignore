@@ -1,0 +1,30 @@
+*.iml
+.gradle
+.claude/
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/app/build
+/captures
+.externalNativeBuild
+.cxx
+.kotlin
+local.properties
+hs_err_pid*.log
+replay_pid*.log
+
+# Signing (never commit — used to sign release builds for the Play Store)
+/keystore/
+keystore.properties
+*.jks
+*.keystore
+
+# Build artifacts — regenerate with ./gradlew assembleDebug, don't commit binaries
+*.apk
+*.aab
