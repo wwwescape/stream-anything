@@ -1,0 +1,59 @@
+name: Release
+
+# Manual semantic version tags, not automated commit-driven versioning. Bump versionCode/
+# versionName in app/build.gradle.kts, commit, then:
+#
+#   git tag v0.1.0
+#   git push origin v0.1.0
+#
+# That push is the only thing that triggers this workflow. It builds a signed release APK
+# and AAB and attaches both to an auto-generated GitHub Release. The AAB is what you upload
+# to the Play Console; the APK is provided for anyone who wants to sideload a release build.
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Decode signing key
+        run: |
+          mkdir -p keystore
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > keystore/stream-anything-upload.jks
+          cat > keystore.properties <<EOF
+          storeFile=keystore/stream-anything-upload.jks
+          storePassword=${{ secrets.KEYSTORE_PASSWORD }}
+          keyAlias=${{ secrets.KEY_ALIAS }}
+          keyPassword=${{ secrets.KEY_PASSWORD }}
+          EOF
+
+      - name: Build release APK and AAB
+        run: ./gradlew assembleRelease bundleRelease
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            app/build/outputs/apk/release/app-release.apk \
+            app/build/outputs/bundle/release/app-release.aab \
+            --title "${{ github.ref_name }}" \
+            --generate-notes

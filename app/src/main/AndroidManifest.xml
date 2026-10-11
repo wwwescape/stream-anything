@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Fetching the video host's page and streaming the video itself, and Play on TV (an
+         opt-in, local-network-only link from phone to TV via NSD). Targeting Android 17+ will
+         also need the local network permission for Play on TV. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Android TV / Google TV: neither a touchscreen nor the leanback feature is required, so
+         the same APK installs on phones, tablets, and TVs. -->
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
+
+    <application
+        android:allowBackup="true"
+        android:banner="@drawable/tv_banner"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:enableOnBackInvokedCallback="true"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.StreamAnything"
+        android:networkSecurityConfig="@xml/network_security_config">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.StreamAnything.Starting"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+
+            <!-- "Share" a link from any app (browser, chat) straight into the player. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+
+            <!-- "Open with Stream Anything" for supported links. Not auto-verified (these aren't
+                 our domains), so the system offers it in the chooser rather than taking over. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" />
+                <data android:host="streamtape.com" />
+                <data android:host="www.streamtape.com" />
+                <data android:host="streamtape.net" />
+                <data android:host="streamtape.to" />
+                <data android:host="streamtape.xyz" />
+                <data android:host="streamtape.cc" />
+                <data android:host="streamta.pe" />
+                <data android:host="strtape.cloud" />
+                <data android:host="advtpe.com" />
+                <data android:host="bigwarp.io" />
+                <data android:host="dood.to" />
+                <data android:host="dood.la" />
+                <data android:host="doodstream.com" />
+                <data android:host="myvidplay.com" />
+                <data android:host="playmogo.com" />
+                <data android:host="lulustream.com" />
+                <data android:host="luluvdo.com" />
+                <data android:host="mixdrop.ag" />
+                <data android:host="mixdrop.co" />
+                <data android:host="mixdrop.to" />
+                <data android:host="mixdrop.sx" />
+                <data android:host="streamwish.to" />
+                <data android:host="streamwish.com" />
+                <data android:host="veev.to" />
+                <data android:host="vidhide.com" />
+                <data android:host="vidnest.io" />
+                <data android:host="voe.sx" />
+                <!-- Video page paths only (/v/ Streamtape & VidHide, /e/ embeds, /d/ Dood & Veev,
+                     /f/ Mixdrop), so these sites' other pages still open in the browser. -->
+                <data android:pathPrefix="/v/" />
+                <data android:pathPrefix="/e/" />
+                <data android:pathPrefix="/d/" />
+                <data android:pathPrefix="/f/" />
+            </intent-filter>
+        </activity>
+
+        <!-- Full-screen player. Not exported: only ever started from within this app's own task.
+             Handles its own configuration changes so rotating (or folding) never interrupts
+             playback by recreating the surface. -->
+        <activity
+            android:name=".ui.player.PlayerActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|navigation|density|uiMode"
+            android:theme="@style/Theme.StreamAnything.Player" />
+    </application>
+
+</manifest>

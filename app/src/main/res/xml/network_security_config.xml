@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cleartext (plain http://) is permitted at the platform level only because this file can't
+     express "private IP ranges only". The app enforces that itself: HomeNetwork.cleartextGuard
+     on the shared HTTP client (which the player also uses) refuses plain HTTP to anything but
+     home-network IP addresses, on every request and redirect hop — so internet traffic stays
+     HTTPS-only. Needed for videos shared from a computer by Stream Anything Server. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
